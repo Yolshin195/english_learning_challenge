@@ -51,16 +51,13 @@ async def provider_challenge_day_repository(db_session: AsyncSession) -> Challen
 @get("/")
 async def index(repo: ChallengeDayRepository) -> Template:
     # Получаем текущий месяц и год
-    current_year = datetime.now().year
-    current_month = datetime.now().month
+    today = datetime.today()
 
     # Получаем количество дней в месяце и смещение для сетки календаря
-    days_in_month = calendar.monthrange(current_year, current_month)[1]
-    first_weekday_offset = calendar.monthrange(current_year, current_month)[
-        0]  # Начальный день недели (0 - Понедельник)
+    first_weekday_offset, days_in_month = calendar.monthrange(today.year, today.month)
 
     # Название месяца
-    month_name = calendar.month_name[current_month]
+    month_name = calendar.month_name[today.month]
 
     # Запрашиваем существующие дни из базы
     days = await repo.list()
@@ -69,8 +66,8 @@ async def index(repo: ChallengeDayRepository) -> Template:
     if not days:
         for i in range(1, days_in_month + 1):
             await repo.add(ChallengeDay(
-                year=current_year,
-                month=current_month,
+                year=today.year,
+                month=today.month,
                 day=i,
                 completed=False
             ))
@@ -84,7 +81,7 @@ async def index(repo: ChallengeDayRepository) -> Template:
             "days": days,
             "first_weekday_offset": first_weekday_offset,
             "current_month_name": month_name,
-            "current_year": current_year
+            "current_year": today.year,
         }
     )
 
