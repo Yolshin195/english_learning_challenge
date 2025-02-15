@@ -1,8 +1,10 @@
-<div
+<button
     id="day-{{ day.day }}"
-    class="day {% if day.completed %}completed{% endif %}"
+    class="col d-flex align-items-center justify-content-center border rounded {% if day.day < current_day and not day.completed %}bg-danger text-white bg-opacity-50{% elif day.completed %}bg-success text-white{% elif current_day == day.day %}bg-dark text-white{% else %}bg-white{% endif %} p-2"
     hx-post="/toggle/{{ day.day }}"
     hx-swap="outerHTML"
+    style="cursor: pointer;"
+    {% if day.day < current_day %}disabled{% endif %}
 >
-    День {{ day.day }}
-</div>
+    {{ day.day }}
+</button>

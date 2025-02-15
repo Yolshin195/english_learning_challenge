@@ -78,6 +78,7 @@ async def index(repo: ChallengeDayRepository) -> Template:
     return Template(
         "index.html.jinja2",
         context={
+            "current_day": today.day,
             "days": days,
             "first_weekday_offset": first_weekday_offset,
             "current_month_name": month_name,
@@ -93,7 +94,15 @@ async def toggle_day(day: int, repo: ChallengeDayRepository) -> HTMXTemplate:
     if challenge_day:
         challenge_day.completed = not challenge_day.completed
         await repo.add(challenge_day, auto_commit=True)
-    return HTMXTemplate(template_name="day.html.jinja2", context={"day": challenge_day}, re_swap="outerHTML", re_target=f"#day-{day}")
+    return HTMXTemplate(
+        template_name="day.html.jinja2",
+        re_swap="outerHTML",
+        re_target = f"#day-{day}",
+        context={
+            "current_day": datetime.today().day,
+            "day": challenge_day
+        }
+    )
 
 
 # Конфигурация Jinja2 и запуск приложения
