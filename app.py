@@ -54,8 +54,13 @@ async def index(repo: ChallengeDayRepository) -> Template:
     current_year = datetime.now().year
     current_month = datetime.now().month
 
-    # Вычисляем количество дней в месяце
+    # Получаем количество дней в месяце и смещение для сетки календаря
     days_in_month = calendar.monthrange(current_year, current_month)[1]
+    first_weekday_offset = calendar.monthrange(current_year, current_month)[
+        0]  # Начальный день недели (0 - Понедельник)
+
+    # Название месяца
+    month_name = calendar.month_name[current_month]
 
     # Запрашиваем существующие дни из базы
     days = await repo.list()
@@ -72,8 +77,16 @@ async def index(repo: ChallengeDayRepository) -> Template:
         await repo.session.commit()
         days = await repo.list()
 
-    # Передаем количество дней в шаблон
-    return Template("index.html.jinja2", context={"days": days})
+    # Передаем данные в шаблон
+    return Template(
+        "index.html.jinja2",
+        context={
+            "days": days,
+            "first_weekday_offset": first_weekday_offset,
+            "current_month_name": month_name,
+            "current_year": current_year
+        }
+    )
 
 
 # Обновление состояния дня с использованием HTMX

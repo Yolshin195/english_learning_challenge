@@ -18,14 +18,17 @@
         .calendar-container {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+            gap: 5px;
             justify-content: center;
             padding: 10px;
             max-width: 600px;
             margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .day {
+        .day, .empty-day, .weekday {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -38,18 +41,46 @@
             font-size: 14px;
         }
 
+        .weekday {
+            font-weight: bold;
+            background-color: #f0f0f0;
+            cursor: default;
+        }
+
         .day.completed {
             background-color: lightgreen;
             color: #fff;
         }
+
+        .empty-day {
+            pointer-events: none;
+            background-color: transparent;
+            border: none;
+        }
+
         .day:hover {
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 <body>
-    <h1>30-Day Challenge</h1>
-    <div class="calendar-container" id="days-container">
+    <h1>{{ current_month_name }}, {{ current_year }}</h1>
+    <div class="calendar-container" id="calendar">
+        <!-- Дни недели -->
+        <div class="weekday">Пн</div>
+        <div class="weekday">Вт</div>
+        <div class="weekday">Ср</div>
+        <div class="weekday">Чт</div>
+        <div class="weekday">Пт</div>
+        <div class="weekday">Сб</div>
+        <div class="weekday">Вс</div>
+
+        <!-- Пустые ячейки перед началом месяца -->
+        {% for _ in range(first_weekday_offset) %}
+            <div class="empty-day"></div>
+        {% endfor %}
+
+        <!-- Дни месяца -->
         {% for day in days %}
             {% include "day.html.jinja2" %}
         {% endfor %}
