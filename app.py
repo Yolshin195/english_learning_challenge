@@ -1,7 +1,9 @@
+import calendar
+from datetime import datetime
 from pathlib import Path
 
 from litestar.di import Provide
-from sqlalchemy import Column, Integer, Boolean
+from sqlalchemy import Column, Integer, Boolean, UniqueConstraint
 from sqlalchemy.ext.asyncio import AsyncSession
 from litestar import Litestar, get, post
 from litestar.plugins.htmx import HTMXPlugin, HTMXRequest, HTMXTemplate
@@ -27,8 +29,14 @@ sqlalchemy_config = SQLAlchemyAsyncConfig(
 class ChallengeDay(base.BigIntBase):
     __tablename__ = "challenge_days"
     id = Column(Integer, primary_key=True, index=True)
-    day = Column(Integer, unique=True, nullable=False)
+    year = Column(Integer, nullable=False)
+    month = Column(Integer, nullable=False)
+    day = Column(Integer, nullable=False)
     completed = Column(Boolean, default=False)
+
+    __table_args__ = (
+        UniqueConstraint('year', 'month', 'day', name='unique_year_month_day'),
+    )
 
 
 class ChallengeDayRepository(repository.SQLAlchemyAsyncRepository[ChallengeDay]):
@@ -42,12 +50,29 @@ async def provider_challenge_day_repository(db_session: AsyncSession) -> Challen
 # Главная страница
 @get("/")
 async def index(repo: ChallengeDayRepository) -> Template:
+    # Получаем текущий месяц и год
+    current_year = datetime.now().year
+    current_month = datetime.now().month
+
+    # Вычисляем количество дней в месяце
+    days_in_month = calendar.monthrange(current_year, current_month)[1]
+
+    # Запрашиваем существующие дни из базы
     days = await repo.list()
+
+    # Если дней нет, создаем их с учетом текущего месяца
     if not days:
-        for i in range(1, 31):
-            await repo.add(ChallengeDay(day=i, completed=False))
+        for i in range(1, days_in_month + 1):
+            await repo.add(ChallengeDay(
+                year=current_year,
+                month=current_month,
+                day=i,
+                completed=False
+            ))
         await repo.session.commit()
         days = await repo.list()
+
+    # Передаем количество дней в шаблон
     return Template("index.html.jinja2", context={"days": days})
 
 

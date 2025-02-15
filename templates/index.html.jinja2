@@ -6,14 +6,50 @@
     <title>Challenge Tracker</title>
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        .day { display: inline-block; padding: 10px; margin: 5px; cursor: pointer; border: 1px solid #ccc; }
-        .completed { background-color: lightgreen; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            background-color: #f8f8f8;
+        }
+
+        h1 { margin: 20px 0; }
+
+        .calendar-container {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            justify-content: center;
+            padding: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .day {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+            height: 50px;
+            font-size: 14px;
+        }
+
+        .day.completed {
+            background-color: lightgreen;
+            color: #fff;
+        }
+        .day:hover {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
     <h1>30-Day Challenge</h1>
-    <div id="days-container">
+    <div class="calendar-container" id="days-container">
         {% for day in days %}
             {% include "day.html.jinja2" %}
         {% endfor %}
