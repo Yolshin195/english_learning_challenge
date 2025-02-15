@@ -1,0 +1,6 @@
+<div id="day-{{ day.day }}"
+     class="day {% if day.completed %}completed{% endif %}"
+     hx-post="/toggle/{{ day.day }}"
+     hx-swap="outerHTML">
+    День {{ day.day }} {% if day.completed %}✔{% endif %}
+</div>

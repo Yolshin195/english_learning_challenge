@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge Tracker</title>
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .day { display: inline-block; padding: 10px; margin: 5px; cursor: pointer; border: 1px solid #ccc; }
+        .completed { background-color: lightgreen; }
+    </style>
+</head>
+<body>
+    <h1>30-Day Challenge</h1>
+    <div id="days-container">
+        {% for day in days %}
+            {% include "day.html.jinja2" %}
+        {% endfor %}
+    </div>
+</body>
+</html>
